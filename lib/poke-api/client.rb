@@ -46,8 +46,12 @@ module Poke
       end
 
       def store_location(loc)
-        pos = Poke::API::Helpers.get_position(loc).first
-        logger.info "[+] Given location: #{pos.address}"
+        if loc.is_a?(String) && coord_str = loc.split(',') && coord_str.length == 2 && coord_str.map(&:to_f).map(&:to_s) == coord_str
+          pos = Struct.new(:latitude, :longitude).new(*coord_str.map(&:to_f))
+        else
+          pos = Poke::API::Helpers.get_position(loc).first
+          logger.info "[+] Given location: #{pos.address}"
+        end
 
         logger.info "[+] Lat/Long: #{pos.latitude}, #{pos.longitude}"
         @lat, @lng = pos.latitude, pos.longitude
